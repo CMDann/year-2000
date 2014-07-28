@@ -1,20 +1,33 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+// This script is custom code used along side other character controllers. This handles death height, lives, animation, and health
+// Author: Daniel Blair
+
 // The player object
 public class PlayerController : MonoBehaviour {
 	
-	// Define health
+	// Define player stats
 	public int health = 100;
 	public int lives = 5;
 	public int deaths = 0;
-	
+
+	// Respawn coordinates
 	public float respawn_x = -59.28231F;
 	public float respawn_y = 59.11393F;
 	public float respawn_z = 53.60716F;
 
+	// Death variables
 	public float death_height = 50F;
 	public bool death = false;
+
+	// Animation variables
+	public string run = "";
+	public string idle = "";
+	public string jump = "";
+	public string attack = "";
+	public string attack2 = "";
+	private string animationToPlay = "idle";
 	
 	// Handle damage for the character
 	public void damage(int damage){
@@ -33,6 +46,67 @@ public class PlayerController : MonoBehaviour {
 		// You might be falling!
 		if (transform.position.y <= death_height)
 			falling ();
+
+		// Call the function to handle animation
+		animate_player ();
+	}
+
+
+	// Animate the player object
+	void animate_player(){
+
+		// Movement
+		if(Input.GetKeyUp("left")){
+			animationToPlay = idle;
+		}
+		if(Input.GetKey("left")){
+			animationToPlay = run;
+		}
+
+		if(Input.GetKeyUp("right")){
+			animationToPlay = idle;
+		}
+		if(Input.GetKey("right")){
+			animationToPlay = run;
+		}
+		
+		if(Input.GetKeyUp("d")){
+			animationToPlay = idle;
+		}
+		if(Input.GetKey("d")){
+			animationToPlay = run;
+		}
+		
+		if(Input.GetKeyUp("a")){
+			animationToPlay = idle;
+		}
+		if(Input.GetKey("a")){
+			animationToPlay = run;
+		}
+
+		// Jumping
+		if(Input.GetKeyDown("space")){
+			animationToPlay = jump;
+		}
+		if(Input.GetKeyUp("space")){
+			animationToPlay = idle;
+		}
+
+		// Attack Scripts
+		if(Input.GetKey("2")){
+			animationToPlay = attack2;
+		}
+		if(Input.GetKeyUp("2")){
+			animationToPlay = idle;
+		}
+		if(Input.GetKey("1")){
+			animationToPlay = attack;
+		}
+		if(Input.GetKeyUp("1")){
+			animationToPlay = idle;
+		}
+
+		animation.Play(animationToPlay);
 	}
 	
 	// OMG You're falling

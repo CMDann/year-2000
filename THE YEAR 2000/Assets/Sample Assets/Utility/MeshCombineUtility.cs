@@ -1,8 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
-public class MeshCombineUtility {
-	
+public class MeshCombineUtility 
+{	
 	public struct MeshInstance
 	{
 		public Mesh      mesh;
@@ -24,7 +24,7 @@ public class MeshCombineUtility {
 				if (generateStrips)
 				{
 					// SUBOPTIMAL FOR PERFORMANCE
-					int curStripCount = combine.mesh.GetTriangles(combine.subMeshIndex).Length;
+					int curStripCount = combine.mesh.GetTriangleStrip(combine.subMeshIndex).Length;
 					if (curStripCount != 0)
 					{
 						if( stripCount != 0 )
@@ -61,6 +61,7 @@ public class MeshCombineUtility {
 		Vector4[] tangents = new Vector4[vertexCount] ;
 		Vector2[] uv = new Vector2[vertexCount];
 		Vector2[] uv1 = new Vector2[vertexCount];
+		Vector2[] uv2 = new Vector2[vertexCount];
 		Color[] colors = new Color[vertexCount];
 		
 		int[] triangles = new int[triangleCount];
@@ -111,6 +112,27 @@ public class MeshCombineUtility {
 				Copy(combine.mesh.vertexCount, combine.mesh.uv1, uv1, ref offset);
 		}
 		
+		float volume = 0.0f;
+		foreach(MeshInstance combine in combines)
+		{
+			if(combine.mesh)
+			{
+				volume += combine.mesh.bounds.size.x * combine.mesh.bounds.size.y * combine.mesh.bounds.size.z;
+			}
+		}
+		
+		offset=0;
+		float cVolume = 0.0f;
+		foreach(MeshInstance combine in combines)
+		{
+			if(combine.mesh)
+			{	
+				float inf = (combine.mesh.bounds.size.x * combine.mesh.bounds.size.y * combine.mesh.bounds.size.z) / volume;			
+				CopyUV2(combine.mesh.vertexCount, combine.mesh.uv2, uv2, ref offset, inf, cVolume);
+				cVolume += inf;
+			}
+		}
+		
 		offset=0;
 		foreach( MeshInstance combine in combines )
 		{
@@ -127,7 +149,7 @@ public class MeshCombineUtility {
 			{
 				if (generateStrips)
 				{
-					int[] inputstrip = combine.mesh.GetTriangles(combine.subMeshIndex);
+					int[] inputstrip = combine.mesh.GetTriangleStrip(combine.subMeshIndex);
 					if (stripOffset != 0)
 					{
 						if ((stripOffset & 1) == 1)
@@ -172,9 +194,10 @@ public class MeshCombineUtility {
 		mesh.colors = colors;
 		mesh.uv = uv;
 		mesh.uv1 = uv1;
+		mesh.uv2 = uv2;
 		mesh.tangents = tangents;
 		if (generateStrips)
-			mesh.SetTriangles(strip, 0);
+			mesh.SetTriangleStrip(strip, 0);
 		else
 			mesh.triangles = triangles;
 		
@@ -199,6 +222,16 @@ public class MeshCombineUtility {
 	{
 		for (int i=0;i<src.Length;i++)
 			dst[i+offset] = src[i];
+		offset += vertexcount;
+	}
+	
+	static void CopyUV2(int vertexcount, Vector2[] src, Vector2[] dst, ref int offset, float influence, float x)
+	{
+		for(int i=0;i< src.Length;i++)
+		{	
+			dst[i+offset] = src[i] * influence + new Vector2(x, 0);
+		}
+		
 		offset += vertexcount;
 	}
 

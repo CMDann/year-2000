@@ -1,3 +1,6 @@
+// Upgrade NOTE: replaced 'PositionFog()' with multiply of UNITY_MATRIX_MVP by position
+// Upgrade NOTE: replaced 'V2F_POS_FOG' with 'float4 pos : SV_POSITION'
+
 Shader "FX/Water (simple)" {
 Properties {
 	_horizonColor ("Horizon color", COLOR)  = ( .172 , .463 , .435 , 0)
@@ -41,12 +44,12 @@ v2f vert(appdata v)
 
 	// scroll bump waves
 	float4 temp;
-	temp.xyzw = v.vertex.xzxz * unity_Scale.xzxz * _WaveScale + _WaveOffset;
+	temp.xyzw = v.vertex.xzxz * _WaveScale + _WaveOffset;
 	o.bumpuv[0] = temp.xy * float2(.4, .45);
 	o.bumpuv[1] = temp.wz;
 
 	// object space view direction
-	o.viewDir.xzy = normalize( WorldSpaceViewDir(v.vertex) );
+	o.viewDir.xzy = normalize( ObjSpaceViewDir(v.vertex) );
 
 	return o;
 }
@@ -64,6 +67,7 @@ CGPROGRAM
 #pragma vertex vert
 #pragma fragment frag
 #pragma fragmentoption ARB_precision_hint_fastest 
+#pragma fragmentoption ARB_fog_exp2
 
 sampler2D _BumpMap;
 sampler2D _ColorControl;
