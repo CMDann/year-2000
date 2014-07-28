@@ -12,8 +12,8 @@ public class PlayerController : MonoBehaviour {
 	public float respawn_x = -59.28231F;
 	public float respawn_y = 59.11393F;
 	public float respawn_z = 53.60716F;
-	
-	public float death_height = 50;
+
+	public float death_height = 50F;
 	public bool death = false;
 	
 	// Handle damage for the character

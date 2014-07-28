@@ -4,7 +4,7 @@ using UnityEngine;
 public class ThirdPersonUserControl : MonoBehaviour {
 	
 	public bool walkByDefault = false;                  // toggle for walking state
-	public bool lookInCameraDirection = true;           // should the character be looking in the same direction that the camera is facing
+	public bool lookInCameraDirection = false;           // should the character be looking in the same direction that the camera is facing
 	
 	private Vector3 lookPos;                            // The position that the character should be looking towards
     private ThirdPersonCharacter character;             // A reference to the ThirdPersonCharacter on the object
